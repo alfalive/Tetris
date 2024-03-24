@@ -1,6 +1,5 @@
 class_name Drawer extends Node2D
 
-enum FieldColor {NONE, CYAN, BLUE, ORANGE, YELLOW, GREEN, PURPLE, RED}
 const ColorMap = ['#FFFFFF', '#00FFFF', '#0476D0', '#FFA500', '#FDFD96', '#77DD77', '#8F00FF', '#FF033E']
 
 var xCount = 10
