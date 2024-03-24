@@ -38,6 +38,7 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if rule.step():
-		drawer.queue_redraw()
+	match rule.step():
+		RuleResult.RENDER:
+			drawer.queue_redraw()
 	pass
