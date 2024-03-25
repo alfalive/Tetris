@@ -10,6 +10,7 @@ var trackPos = Vector2(0, 0)
 var trackSize: int
 var trackColor = FieldColor.NONE
 var trackArr = [[false, false, false, false],[false, false, false, false],[false, false, false, false],[false, false, false, false]]
+var rotatedTrack = [[false, false, false, false],[false, false, false, false],[false, false, false, false],[false, false, false, false]]
 
 
 func _init(fieldArr: Array):
@@ -17,14 +18,16 @@ func _init(fieldArr: Array):
 	lastMoveTime = Time.get_ticks_msec()
 	resetTrack()
 
+func zeroArray(arr: Array):
+	for y in arr.size():
+		for x in arr[0].size():
+			arr[y][x] = false
 
 func resetTrack():
 	trackPos.x = defaultXSpawn
 	trackPos.y = 0
 	isTracking = false
-	for y in trackArr.size():
-		for x in trackArr[0].size():
-			trackArr[y][x] = false
+	zeroArray(trackArr)
 
 func hasTrackSpace():
 	for y in trackSize:
@@ -163,6 +166,22 @@ func canMoveLeft():
 				break
 	return true
 
+func calcRotated():
+	zeroArray(rotatedTrack)
+	for y in trackSize:
+		for x in trackSize:
+			rotatedTrack[x][trackSize - y - 1] = trackArr[y][x]
+	pass
+
+func canApply(arr: Array):
+	for y in trackSize:
+		for x in trackSize:
+			var combinedX = trackPos.x + x
+			var combinedY = trackPos.y + y
+			if !isInRange(combinedX, combinedY) || fieldArr[combinedY][combinedX] != FieldColor.NONE && arr[y][x]:
+				return false
+	return true
+
 # Player Action
 func right():
 	var result = canMoveRight()
@@ -181,7 +200,15 @@ func left():
 	return result
 	
 func rotate():
-	pass
-	
+	calcRotated()
+	removeTrack()
+	var result = canApply(rotatedTrack)
+	if result:
+		for y in trackSize:
+			for x in trackSize:
+				trackArr[y][x] = rotatedTrack[y][x]
+	applyTrack()
+	return result
+
 func veryDown():
 	pass
