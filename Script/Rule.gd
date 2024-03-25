@@ -30,6 +30,7 @@ func resetTrack():
 	trackPos.y = 0
 	isTracking = false
 	zeroArray(trackArr)
+	removeFinishedRows()
 	lastMoveTime = Time.get_ticks_msec()
 
 func step():
@@ -150,6 +151,28 @@ func getVeryDownDistance():
 		if x < shortest:
 			shortest = x
 	return shortest
+
+func getFinishedRow():
+	for y in range(fieldArr.size()-1, 0, -1):
+		var isFull = true
+		for x in fieldArr[y].size():
+			if fieldArr[y][x] == FieldColor.NONE:
+				isFull = false
+				break
+		if isFull:
+				return y
+	return -1
+
+func removeRow(row: int):
+	for y in range(row, 0, -1):
+		for x in fieldArr[0].size():
+			fieldArr[y][x] = fieldArr[y-1][x]
+
+func removeFinishedRows():
+	var row = getFinishedRow()
+	while row != -1:
+		removeRow(row)
+		row = getFinishedRow()
 
 #Checks
 func hasTrackSpace():
