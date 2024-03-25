@@ -4,6 +4,8 @@ var fieldArr: Array
 const defaultXSpawn = 3
 var lastMoveTime = 0
 var isDone = false
+var baseTickTime = 500
+var currentTickTime = baseTickTime
 
 var isTracking = false
 var trackPos = Vector2(0, 0)
@@ -47,7 +49,7 @@ func step():
 		return RuleResult.RENDER
 	
 	var time = Time.get_ticks_msec()
-	if time - lastMoveTime > 200:
+	if time - lastMoveTime > currentTickTime:
 		if canMoveDown():
 			moveDown()
 			lastMoveTime = time
@@ -209,6 +211,12 @@ func rotate():
 				trackArr[y][x] = rotatedTrack[y][x]
 	applyTrack()
 	return result
+
+func startSpeed():
+	currentTickTime = 50
+
+func stopSpeed():
+	currentTickTime = baseTickTime
 
 func veryDown():
 	pass

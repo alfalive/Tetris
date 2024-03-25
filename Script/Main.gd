@@ -44,6 +44,11 @@ func _process(delta):
 		drawer.queue_redraw()
 	if Input.is_action_just_pressed("up") && rule.rotate():
 		drawer.queue_redraw()
+	if Input.is_action_just_pressed("down"):
+		rule.startSpeed()
+	if Input.is_action_just_released("down"):
+		rule.stopSpeed()
+	
 	match rule.step():
 		RuleResult.RENDER:
 			drawer.queue_redraw()
