@@ -16,7 +16,8 @@ func _init(fieldArr: Array):
 	self.fieldArr = fieldArr
 	lastMoveTime = Time.get_ticks_msec()
 	resetTrack()
-	
+
+
 func resetTrack():
 	trackPos.x = defaultXSpawn
 	trackPos.y = 0
@@ -127,6 +128,12 @@ func moveDown():
 func isBelowFree(x, y: int):
 	return isInRange(x, y + 1) && fieldArr[y + 1][x] == FieldColor.NONE
 
+func isRightFree(x, y: int):
+	return isInRange(x + 1, y) && fieldArr[y][x + 1] == FieldColor.NONE
+
+func isLeftFree(x, y: int):
+	return isInRange(x - 1, y) && fieldArr[y][x - 1] == FieldColor.NONE
+
 func canMoveDown():
 	for x in trackSize:
 		for y in range(trackSize - 1, -1, -1):
@@ -136,12 +143,40 @@ func canMoveDown():
 				break
 	return true
 
+func canMoveRight():
+	for y in trackSize:
+		for x in range(trackSize - 1, -1, -1):
+			if trackArr[y][x]:
+				if !isRightFree(trackPos.x + x, trackPos.y + y):
+					return false
+				break
+	return true
+
+func canMoveLeft():
+	for y in trackSize:
+		for x in trackSize:
+			if trackArr[y][x]:
+				if !isLeftFree(trackPos.x + x, trackPos.y + y):
+					return false
+				break
+	return true
+
 # Player Action
 func right():
-	pass
+	var result = canMoveRight()
+	if result:
+		removeTrack()
+		trackPos.x += 1
+		applyTrack()
+	return result
 	
 func left():
-	pass
+	var result = canMoveLeft()
+	if result:
+		removeTrack()
+		trackPos.x -= 1
+		applyTrack()
+	return result
 	
 func rotate():
 	pass

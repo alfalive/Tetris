@@ -38,6 +38,10 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	if Input.is_action_just_pressed("right") && rule.right():
+		drawer.queue_redraw()
+	if Input.is_action_just_pressed("left") && rule.left():
+		drawer.queue_redraw()
 	match rule.step():
 		RuleResult.RENDER:
 			drawer.queue_redraw()
