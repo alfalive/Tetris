@@ -30,13 +30,7 @@ func resetTrack():
 	trackPos.y = 0
 	isTracking = false
 	zeroArray(trackArr)
-
-func hasTrackSpace():
-	for y in trackSize:
-		for x in trackSize:
-			if fieldArr[trackPos.y + y][trackPos.x + x] != FieldColor.NONE:
-				return false
-	return true
+	lastMoveTime = Time.get_ticks_msec()
 
 func step():
 	if isDone:
@@ -58,9 +52,6 @@ func step():
 			resetTrack()
 	
 	return RuleResult.NONE
-
-func isInRange(x, y: int):
-	return (x >= 0) && (y >= 0) && (y < fieldArr.size()) && (x < fieldArr[0].size())
 
 func assignTrack(x, y):
 	trackArr[y][x] = true
@@ -132,6 +123,45 @@ func moveDown():
 	trackPos.y += 1
 	applyTrack()
 
+func calcRotated():
+	zeroArray(rotatedTrack)
+	for y in trackSize:
+		for x in trackSize:
+			rotatedTrack[x][trackSize - y - 1] = trackArr[y][x]
+
+func raycastDownDistance(x, y: int):
+	var count = 1
+	var combined = count + y
+	while isInRange(x, combined) && fieldArr[combined][x] == FieldColor.NONE:
+		count += 1
+		combined = count + y
+	return count - 1
+
+func getVeryDownDistance():
+	var distances = []
+	for x in trackSize:
+		for y in range(trackSize - 1, -1, -1):
+			if trackArr[y][x]:
+				var distance = raycastDownDistance(trackPos.x + x, trackPos.y + y)
+				distances.append(distance)
+				break
+	var shortest = 1000
+	for x in distances:
+		if x < shortest:
+			shortest = x
+	return shortest
+
+#Checks
+func hasTrackSpace():
+	for y in trackSize:
+		for x in trackSize:
+			if fieldArr[trackPos.y + y][trackPos.x + x] != FieldColor.NONE:
+				return false
+	return true
+
+func isInRange(x, y: int):
+	return (x >= 0) && (y >= 0) && (y < fieldArr.size()) && (x < fieldArr[0].size())
+
 func isBelowFree(x, y: int):
 	return isInRange(x, y + 1) && fieldArr[y + 1][x] == FieldColor.NONE
 
@@ -168,13 +198,6 @@ func canMoveLeft():
 				break
 	return true
 
-func calcRotated():
-	zeroArray(rotatedTrack)
-	for y in trackSize:
-		for x in trackSize:
-			rotatedTrack[x][trackSize - y - 1] = trackArr[y][x]
-	pass
-
 func canApply(arr: Array):
 	for y in trackSize:
 		for x in trackSize:
@@ -200,7 +223,7 @@ func left():
 		trackPos.x -= 1
 		applyTrack()
 	return result
-	
+
 func rotate():
 	calcRotated()
 	removeTrack()
@@ -219,4 +242,8 @@ func stopSpeed():
 	currentTickTime = baseTickTime
 
 func veryDown():
-	pass
+	var x = getVeryDownDistance()
+	removeTrack()
+	trackPos.y += x
+	applyTrack()
+	resetTrack()

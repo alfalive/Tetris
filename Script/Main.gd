@@ -48,7 +48,9 @@ func _process(delta):
 		rule.startSpeed()
 	if Input.is_action_just_released("down"):
 		rule.stopSpeed()
-	
+	if Input.is_action_just_pressed("ui_select"):
+		rule.veryDown()
+		drawer.queue_redraw()
 	match rule.step():
 		RuleResult.RENDER:
 			drawer.queue_redraw()
