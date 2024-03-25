@@ -42,14 +42,16 @@ func step():
 			return RuleResult.DONE
 		spawnRandom()
 		return RuleResult.RENDER
-	if canMoveDown():
-		var time = Time.get_ticks_msec()
-		if time - lastMoveTime > 200:
+	
+	var time = Time.get_ticks_msec()
+	if time - lastMoveTime > 200:
+		if canMoveDown():
 			moveDown()
 			lastMoveTime = time
 			return RuleResult.RENDER
-	else:
-		resetTrack()
+		else:
+			resetTrack()
+	
 	return RuleResult.NONE
 
 func isInRange(x, y: int):
